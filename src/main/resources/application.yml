@@ -1,0 +1,39 @@
+server:
+  port: 8891
+spring:
+  application:
+    name: stupidzhang_zhihu
+  main:
+    allow-bean-definition-overriding: true
+  task:
+    scheduling:
+      pool:
+        size: 2
+      thread-name-prefix: schedul-jingfen
+logging:
+  level:
+    org.springframework.web: INFO
+    com.github.binarywang.demo.wx.mp: DEBUG
+    me.chanjar.weixin: DEBUG
+wx:
+  mp:
+    useRedis: false
+    redisConfig:
+      host:
+      port:
+      password: stupidzhang
+    configs:
+      - appId:
+        secret:
+        token:
+        aesKey:
+
+jing:
+  fen:
+    local: false
+    #orderProperties:
+    orderTemplateId: AXMblD4AtNrOYFANg9NSHkNm4itBR9dEJyyzClOUy-w
+    jingFenConfig:
+      toUser:
+      appKey:
+      appSecret:

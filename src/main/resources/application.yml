@@ -21,7 +21,7 @@ wx:
     redisConfig:
       host:
       port:
-      password: stupidzhang
+      password:
     configs:
       - appId:
         secret:
@@ -30,7 +30,7 @@ wx:
 
 jing:
   fen:
-    local: false
+    local: true
     #orderProperties:
     orderTemplateId: AXMblD4AtNrOYFANg9NSHkNm4itBR9dEJyyzClOUy-w
     jingFenConfig:

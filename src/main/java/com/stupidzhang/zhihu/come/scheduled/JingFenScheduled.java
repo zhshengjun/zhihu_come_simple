@@ -41,12 +41,12 @@ public class JingFenScheduled {
         String startTimeStr = startTime.format(DateTimeFormatter.ofPattern(JdConstants.DATE_TIME_FORMAT));
 
         if (Boolean.TRUE.equals(jingFenProperties.getLocal())) {
-            extracted(startTimeStr, endTimeStr);
+            queryAndSendMessage(startTimeStr, endTimeStr);
         }
     }
 
     @Async
-    public void extracted(String startTimeStr, String endTimeStr) {
+    public void queryAndSendMessage(String startTimeStr, String endTimeStr) {
         try {
             List<WxMpTemplateData> wxMpTemplateData = jingFenApiService.queryOrderList(startTimeStr, endTimeStr);
             if (!CollectionUtils.isEmpty(wxMpTemplateData)) {

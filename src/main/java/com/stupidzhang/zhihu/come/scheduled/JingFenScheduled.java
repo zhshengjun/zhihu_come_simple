@@ -25,7 +25,7 @@ public class JingFenScheduled {
     private List<JingFenApiClient> jingFenApiClients;
 
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void scheduledQueryOrderList() {
         LocalDateTime endTime = LocalDateTime.now().withNano(0);
         LocalDateTime startTime = endTime.minusMinutes(10);

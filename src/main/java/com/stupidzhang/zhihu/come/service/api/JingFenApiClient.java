@@ -1,6 +1,5 @@
 package com.stupidzhang.zhihu.come.service.api;
 
-
 import com.jd.open.api.sdk.JdClient;
 import com.jd.open.api.sdk.domain.kplunion.OrderService.request.query.OrderRowReq;
 import com.jd.open.api.sdk.domain.kplunion.OrderService.response.query.OrderRowQueryResult;
@@ -14,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxRuntimeException;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,27 +22,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * 京东订单查询接口
+ * 京粉查询订单并组装订单
  */
-@Service
 @Slf4j
-public class JingFenApiService {
-
-    @Autowired
-    private JdClient jdClient;
+public class JingFenApiClient {
 
     /**
-     * 查询订单列表方法
-     *
-     * @param startTime 查询开始时间
-     * @param endTime   查询结束时间
+     * client 对象
      */
-    @Retryable(value = Exception.class, backoff = @Backoff(delay = 2000L, multiplier = 1.5))
-    public List<WxMpTemplateData> queryOrderList(String startTime, String endTime) throws WxRuntimeException {
+    private final JdClient jdClient;
+    /**
+     * 发送对象
+     */
+    private final String toUser;
+
+
+    public JingFenApiClient(JdClient jdClient, String toUser) {
+        this.jdClient = jdClient;
+        this.toUser = toUser;
+    }
+
+    public String getToUser() {
+        return toUser;
+    }
+
+
+    public List<WxMpTemplateData> execute(String startTime, String endTime) throws WxRuntimeException {
         UnionOpenOrderRowQueryRequest request = buildRequest(startTime, endTime);
         UnionOpenOrderRowQueryResponse response;
         try {
-            response = jdClient.execute(request);
+            response = this.jdClient.execute(request);
         } catch (Exception exception) {
             log.error("【{}~{}】期间请求数据出错了！！！", startTime, endTime);
             return Collections.emptyList();
@@ -71,7 +75,6 @@ public class JingFenApiService {
         }
         return Collections.emptyList();
     }
-
 
     /**
      * 构建请求实体
@@ -105,7 +108,10 @@ public class JingFenApiService {
         // 订单数量
         long orderNum = orderList.stream().map(OrderRowResp::getOrderId).distinct().count();
         double estimateFee = orderList.stream()
-                .filter(orderRowResp -> OrderStatusEnum.SIXTEEN.getCode().equals(orderRowResp.getValidCode()))
+                .filter(orderRowResp ->
+                        OrderStatusEnum.SIXTEEN.getCode().equals(orderRowResp.getValidCode())
+                                || OrderStatusEnum.SEVENTEEN.getCode().equals(orderRowResp.getValidCode())
+                )
                 .mapToDouble(OrderRowResp::getEstimateFee).sum();
         double eEstimateCosPrice = orderList.stream().mapToDouble(OrderRowResp::getEstimateCosPrice).sum();
         dataList.add(new WxMpTemplateData(WxMessageConstants.MESSAGE_FIRST, String.valueOf(orderNum), "#5d6375"));
@@ -146,6 +152,4 @@ public class JingFenApiService {
         });
         return contentBuilder.toString();
     }
-
-
 }

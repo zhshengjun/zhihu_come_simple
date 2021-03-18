@@ -3,6 +3,8 @@ package com.stupidzhang.zhihu.come.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @Data
 @ConfigurationProperties(prefix = "jing.fen")
 public class JingFenProperties {
@@ -24,7 +26,7 @@ public class JingFenProperties {
     /**
      * 日报消息模板配置
      */
-    private JingFenConfig jingFenConfig;
+    private List<JingFenConfig> configs;
 
     @Data
     public static class JingFenConfig {

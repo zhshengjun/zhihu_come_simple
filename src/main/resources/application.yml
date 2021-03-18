@@ -31,9 +31,11 @@ wx:
 jing:
   fen:
     local: true
-    #orderProperties:
-    orderTemplateId: AXMblD4AtNrOYFANg9NSHkNm4itBR9dEJyyzClOUy-w
-    jingFenConfig:
-      toUser:
-      appKey:
-      appSecret:
+    orderTemplateId:
+    configs:
+      - toUser:
+        appKey:
+        appSecret:
+      - toUser:
+        appKey:
+        appSecret:

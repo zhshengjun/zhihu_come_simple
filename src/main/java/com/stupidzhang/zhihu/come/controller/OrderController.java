@@ -1,22 +1,17 @@
 package com.stupidzhang.zhihu.come.controller;
 
 
-import com.stupidzhang.zhihu.come.config.JingFenProperties;
 import com.stupidzhang.zhihu.come.constant.JdConstants;
-import com.stupidzhang.zhihu.come.service.WeiXinService;
-import com.stupidzhang.zhihu.come.service.api.JingFenApiService;
+import com.stupidzhang.zhihu.come.service.ZhiHuComeService;
 import me.chanjar.weixin.common.error.WxRuntimeException;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /**
  * @author stupidzhang
@@ -25,11 +20,7 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    private JingFenApiService jingFenApiService;
-    @Autowired
-    private JingFenProperties jingFenProperties;
-    @Autowired
-    private WeiXinService weiXinApiService;
+    private ZhiHuComeService zhiHuComeService;
 
 
     @GetMapping(value = "/api/send")
@@ -49,12 +40,7 @@ public class OrderController {
         String endTimeStr = orderTime.format(DateTimeFormatter.ofPattern(JdConstants.DATE_TIME_FORMAT));
         String startTimeStr = startTime.format(DateTimeFormatter.ofPattern(JdConstants.DATE_TIME_FORMAT));
         try {
-            List<WxMpTemplateData> wxMpTemplateData;
-            wxMpTemplateData = jingFenApiService.queryOrderList(startTimeStr, endTimeStr);
-            if (!CollectionUtils.isEmpty(wxMpTemplateData)) {
-                // 发送消息
-                weiXinApiService.sendMessage(openId, jingFenProperties.getOrderTemplateId(), wxMpTemplateData);
-            }
+            zhiHuComeService.queryAndSendMessage(startTimeStr, endTimeStr);
         } catch (WxRuntimeException exception) {
             return exception.getMessage();
         } catch (Exception exception) {

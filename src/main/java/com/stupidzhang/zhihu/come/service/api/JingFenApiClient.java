@@ -46,17 +46,18 @@ public class JingFenApiClient {
         return toUser;
     }
 
-
     public List<WxMpTemplateData> execute(String startTime, String endTime) throws WxRuntimeException {
         UnionOpenOrderRowQueryRequest request = buildRequest(startTime, endTime);
         UnionOpenOrderRowQueryResponse response;
         try {
+            log.info("【{}~{}】期间请求数据", startTime, endTime);
             response = this.jdClient.execute(request);
         } catch (Exception exception) {
             log.error("【{}~{}】期间请求数据出错了！！！", startTime, endTime);
-            return Collections.emptyList();
+            throw new WxRuntimeException("请求数据出错了", exception);
         }
         if (!"0".equals(response.getCode())) {
+            log.error("【{}~{}】期间请求数据出错了，错误原因：{}", startTime, endTime, response.getZhDesc());
             throw new WxRuntimeException(response.getZhDesc());
         }
         OrderRowQueryResult queryResult = response.getQueryResult();
@@ -79,9 +80,9 @@ public class JingFenApiClient {
     /**
      * 构建请求实体
      *
-     * @param startTime
-     * @param endTime
-     * @return
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @return omit
      */
     private UnionOpenOrderRowQueryRequest buildRequest(String startTime, String endTime) {
         UnionOpenOrderRowQueryRequest request = new UnionOpenOrderRowQueryRequest();

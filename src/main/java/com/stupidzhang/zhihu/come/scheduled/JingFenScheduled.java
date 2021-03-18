@@ -1,8 +1,8 @@
 package com.stupidzhang.zhihu.come.scheduled;
 
-import com.stupidzhang.zhihu.come.config.JingFenProperties;
 import com.stupidzhang.zhihu.come.constant.JdConstants;
 import com.stupidzhang.zhihu.come.service.ZhiHuComeService;
+import com.stupidzhang.zhihu.come.service.api.JingFenApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,25 +19,20 @@ import java.util.List;
 @Component
 public class JingFenScheduled {
 
-
     @Autowired
-    private JingFenProperties jingFenProperties;
+    private ZhiHuComeService zhiHuComeService;
     @Autowired
-    private List<ZhiHuComeService> zhiHuComeServices;
+    private List<JingFenApiClient> jingFenApiClients;
 
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void scheduledQueryOrderList() {
         LocalDateTime endTime = LocalDateTime.now().withNano(0);
         LocalDateTime startTime = endTime.minusMinutes(10);
         String endTimeStr = endTime.format(DateTimeFormatter.ofPattern(JdConstants.DATE_TIME_FORMAT));
         String startTimeStr = startTime.format(DateTimeFormatter.ofPattern(JdConstants.DATE_TIME_FORMAT));
-
-        if (Boolean.TRUE.equals(jingFenProperties.getLocal())) {
-            for (ZhiHuComeService zhiHuComeService : zhiHuComeServices) {
-                zhiHuComeService.queryAndSendMessage(endTimeStr, startTimeStr);
-            }
-
+        for (JingFenApiClient jingFenApiClient : jingFenApiClients) {
+            zhiHuComeService.queryAndSendMessage(jingFenApiClient, startTimeStr, endTimeStr);
         }
     }
 }

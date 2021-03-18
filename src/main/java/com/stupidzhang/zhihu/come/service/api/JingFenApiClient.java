@@ -65,7 +65,8 @@ public class JingFenApiClient {
             List<OrderRowResp> originList = Arrays.asList(queryResult.getData());
             // 过滤无效的子订单
             List<OrderRowResp> orderList = originList.stream()
-                    .filter(order -> !(order.getParentId() == 0 && OrderStatusEnum.TWO.getCode().equals(order.getValidCode())))
+                    .filter(order -> !(order.getParentId() == 0 && (OrderStatusEnum.TWO.getCode().equals(order.getValidCode())
+                            || OrderStatusEnum.THREE.getCode().equals(order.getValidCode()))))
                     .collect(Collectors.toList());
             if (orderList.isEmpty()) {
                 log.warn("非常遗憾，新增数据为无效数据，详情见APP");
